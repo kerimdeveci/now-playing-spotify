@@ -83,7 +83,7 @@ def loadImageB64(url):
 
 
 def makeSVG(data):
-    barCount = 85
+    # barCount = 85
     # contentBar = "".join(["<div class='bar'></div>" for i in range(barCount)])
 
     if data == {}:
