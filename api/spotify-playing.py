@@ -1,13 +1,13 @@
+import random
+import os
+import json
+import requests
 from flask import Flask, Response, jsonify, render_template
 from base64 import b64encode
 
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 
-import requests
-import json
-import os
-import random
 
 SPOTIFY_CLIENT_ID = os.getenv("SPOTIFY_CLIENT_ID")
 SPOTIFY_SECRET_ID = os.getenv("SPOTIFY_SECRET_ID")
@@ -34,8 +34,10 @@ def refreshToken():
 
     headers = {"Authorization": "Basic {}".format(getAuth())}
 
-    response = requests.post(SPOTIFY_URL_REFRESH_TOKEN, data=data, headers=headers)
+    response = requests.post(SPOTIFY_URL_REFRESH_TOKEN,
+                             data=data, headers=headers)
     return response.json()["access_token"]
+
 
 def recentlyPlayed():
     token = refreshToken()
@@ -46,6 +48,7 @@ def recentlyPlayed():
         return {}
 
     return response.json()
+
 
 def nowPlaying():
 
@@ -60,7 +63,8 @@ def nowPlaying():
 
     return response.json()
 
-def barGen(barCount):
+
+# def barGen(barCount):
     barCSS = ""
     left = 1
     for i in range(1, barCount + 1):
@@ -72,14 +76,15 @@ def barGen(barCount):
 
     return barCSS
 
+
 def loadImageB64(url):
     resposne = requests.get(url)
     return b64encode(resposne.content).decode("ascii")
 
+
 def makeSVG(data):
     barCount = 85
-    contentBar = "".join(["<div class='bar'></div>" for i in range(barCount)])
-    barCSS = barGen(barCount)
+    # contentBar = "".join(["<div class='bar'></div>" for i in range(barCount)])
 
     if data == {}:
         content_bar = ""
@@ -95,14 +100,13 @@ def makeSVG(data):
     songName = item["name"].replace("&", "&amp;")
 
     dataDict = {
-        "content_bar": contentBar,
-        "css_bar": barCSS,
         "artist_name": artistName,
         "song_name": songName,
         "img": img,
     }
 
     return render_template("spotify.html.j2", **dataDict)
+
 
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
@@ -115,6 +119,7 @@ def catch_all(path):
     resp.headers["Cache-Control"] = "s-maxage=1"
 
     return resp
+
 
 if __name__ == "__main__":
     app.run(debug=True)
